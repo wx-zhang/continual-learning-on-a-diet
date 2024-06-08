@@ -4,3 +4,4 @@ hydra-outputs/
 __pycache__/
 output/
 wandb/
+output
