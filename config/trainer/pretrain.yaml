@@ -1,0 +1,13 @@
+trainer: pretrain
+mask_logits: False
+replay_before: False
+
+model:
+  name: mae_vit16_base_d8
+  pre_trained: ../models/mae_pretrain_vit_base_full.pth
+  find_unused_parameters: True
+
+train_staeg1_steps_ratio: 0.8
+train_stage1_lr_scale: 1.0
+train_stage2_lr_scale: 5.0
+unlabeled_coef: 1.0

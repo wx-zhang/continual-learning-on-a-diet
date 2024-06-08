@@ -1,0 +1,10 @@
+dataset: cloc
+data_root: ./data_folder/cloc
+data_path: ./data_folder/cloc_split
+split: 20
+label_rate: 0.005
+steps: 10000
+
+cl_setting: 'data_incremental'
+
+light_evaluate: True

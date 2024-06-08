@@ -1,0 +1,16 @@
+trainer: diet
+mask_logits: True
+replay_before: True
+
+model:
+  name: mae_vit16_base_d8
+  pre_trained: ../models/mae_pretrain_vit_base_full.pth
+  find_unused_parameters: False
+
+unlabeled_data_ratio: 0.4
+
+
+train_staeg1_steps_ratio: 0.8
+train_stage1_lr_scale: 1.0
+train_stage2_lr_scale: 0.1
+unlabeled_coef: 50.0

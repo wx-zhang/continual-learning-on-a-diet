@@ -1,0 +1,18 @@
+trainer: base
+mask_logits: False
+replay_before: False
+
+
+
+
+model:
+  name: mae_vit_base_patch16 # only for supervised learning
+  pre_trained: ../models/mae_pretrain_vit_base_full.pth
+  find_unused_parameters: False
+
+
+
+
+
+
+

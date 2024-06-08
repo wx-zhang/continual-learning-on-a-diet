@@ -1,0 +1,11 @@
+dataset: imagenet10k
+data_path: ./data_folder/imagenet10k
+split: 20
+label_rate: 0.01
+steps: 500
+
+cl_setting: 'class_incremental'
+
+light_evaluate: False
+
+

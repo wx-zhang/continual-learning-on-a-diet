@@ -1,0 +1,6 @@
+data_folder/
+dcgm/
+hydra-outputs/
+__pycache__/
+output/
+wandb/
