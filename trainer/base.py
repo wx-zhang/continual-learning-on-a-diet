@@ -177,6 +177,8 @@ class BaseTrainer(object):
 
         # compute total iterations
         total_iter = self.compute_iter()
+
+        start_time = time.time()
         
         # +++++++++++++++ Start training ++++++++++ß+++++
         print(f"Start training task {task}")
@@ -205,7 +207,7 @@ class BaseTrainer(object):
 
         iterators = {k: None for k, v in dataloaders.items()}
 
-        start_time = time.time()
+        
         for iteration in range(total_iter):
             step = iteration//accumulation
             end = time.time()
