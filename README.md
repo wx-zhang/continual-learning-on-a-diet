@@ -73,6 +73,8 @@ python main.py trainer@_global_=diet dataset@_global_=imagenet10k n_gpu_per_node
 ```bash
 bash pre_process/download_cglm.sh
 ```  
+Download the CLOC dataset from the official [CLOC](https://github.com/IntelLabs/continuallearning/tree/main/CLOC)
+
 2. Run the following command to split the dataset
 ```bash
 python pre_process/cglm|cloc.py --root /path/to/your/cglm|cloc/folder

@@ -74,6 +74,8 @@ def main(args):
     args.world_size = args.n_gpu_per_node * args.nodes
     if args.world_size == 1:
         args.distributed = False
+    if not args.distributed:
+        args.world_size = 1
     if args.distributed:
         print(OmegaConf.to_yaml(args))
 
