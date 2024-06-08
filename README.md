@@ -65,7 +65,10 @@ python pre_process/label_split.py
 ```
 3. Run the following command to reproduce the results. 
 ```bash
-python main.py trainer@_global_=diet dataset@_global_=imagenet10k n_gpu_per_node=8 data_root=/path/to/your/imagenet21k/folder
+N_GPU=4
+python main.py trainer@_global_=diet dataset@_global_=imagenet10k \
+n_gpu_per_node=${N_GPU} \
+data_root=/path/to/your/imagenet21k/folder
 ```
 
 #### CGLM or CLOC Results
@@ -82,7 +85,10 @@ python pre_process/cglm|cloc.py --root /path/to/your/cglm|cloc/folder
 3. Run the following command to reproduce the results. 
 `data_path` refers to the path to the split files, and `data_root` refers to the path to the image files. 
 ```bash
-python main.py trainer@_global_=diet dataset@_global_=cglm|cloc data_root=/path/to/your/cglm|cloc/folder data_path=/path/to/your/cglm|cloc/split/file/folder
+N_GPU=4
+python main.py trainer@_global_=diet dataset@_global_=cglm|cloc \
+n_gpu_per_node=${N_GPU} \
+data_root=/path/to/your/cglm|cloc/folder data_path=/path/to/your/cglm|cloc/split/file/folder
 ```
 
 ## Customized Multi-GPU Continual Leanring
