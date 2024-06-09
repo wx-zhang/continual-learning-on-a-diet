@@ -3,10 +3,12 @@ import os
 import random
 import numpy as np
 
-parser = argparse.ArgumentParser(description='Split benchmark into N time steps')
+parser = argparse.ArgumentParser(
+    description='Split benchmark into N time steps')
 parser.add_argument('--datadir', default='data_folder/imagenet10k', metavar='DIR',
                     help='Path to save non-overlap  benchmark')
-parser.add_argument('--split', default=20, type=int, metavar='N', help='Number of time steps')
+parser.add_argument('--split', default=20, type=int,
+                    metavar='N', help='Number of time steps')
 args = parser.parse_args()
 
 # check if the datadir is absolute path

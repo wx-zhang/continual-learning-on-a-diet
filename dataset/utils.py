@@ -1,15 +1,14 @@
 from PIL import Image
-import pandas as pd
-import torch
 import torch.nn.parallel
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
-from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
+
 def build_transform(is_train, input_size):
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    normalize = transforms.Normalize(
+        mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     # train transform
     if is_train:
         # this should always dispatch to transforms_imagenet_train
@@ -25,7 +24,8 @@ def build_transform(is_train, input_size):
         crop_pct = 1.0
     size = int(input_size / crop_pct)
     t.append(
-        transforms.Resize(size, interpolation=transforms.InterpolationMode.BICUBIC),
+        transforms.Resize(
+            size, interpolation=transforms.InterpolationMode.BICUBIC),
         # to maintain same ratio w.r.t. 224 images
     )
     t.append(transforms.CenterCrop(input_size))
@@ -33,6 +33,7 @@ def build_transform(is_train, input_size):
     t.append(transforms.ToTensor())
     t.append(normalize)
     return transforms.Compose(t)
+
 
 def default_loader(path: str):
     from torchvision import get_image_backend

@@ -11,9 +11,12 @@ def symlink_force(target, link_name):
 
 
 parser = argparse.ArgumentParser(description='Get ImageNet benchmark')
-parser.add_argument('--root21k', default='data_folder/imagenet', metavar='DIR', help='ImageNet 21k dataroot')
-parser.add_argument('--base_store_root', default='data_folder', metavar='DIR', help='ImageNet 21k dataroot')
-parser.add_argument('--benchmark_name', default='imagenet10k', metavar='DIR', help='Path to save benchmark')
+parser.add_argument('--root21k', default='data_folder/imagenet',
+                    metavar='DIR', help='ImageNet 21k dataroot')
+parser.add_argument('--base_store_root', default='data_folder',
+                    metavar='DIR', help='ImageNet 21k dataroot')
+parser.add_argument('--benchmark_name', default='imagenet10k',
+                    metavar='DIR', help='Path to save benchmark')
 
 args = parser.parse_args()
 

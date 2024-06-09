@@ -21,7 +21,8 @@ def save_checkpoint(args, model, val_top1, task):
             },
             f"{args.output_dir}/checkpoint.{task}.pth",
         )
-        print(f"Saved the checkpoint for task {task} in {args.output_dir}/checkpoint.{task}.pth")
+        print(
+            f"Saved the checkpoint for task {task} in {args.output_dir}/checkpoint.{task}.pth")
 
 
 def find_available_ckpt(dir):
@@ -32,7 +33,8 @@ def find_available_ckpt(dir):
     """
 
     ckpt_files = os.listdir(dir)
-    ckpt_files = [f for f in ckpt_files if f.startswith("checkpoint.") and f.endswith(".pth")]
+    ckpt_files = [f for f in ckpt_files if f.startswith(
+        "checkpoint.") and f.endswith(".pth")]
     ckpt_files = sorted(ckpt_files)
     available_flag = 0
     while (not available_flag) and len(ckpt_files) > 0:
@@ -57,20 +59,23 @@ def resume_from_checkpoint(dir, task, model):
     print(f"Resumed from checkpoint for task {task}")
     return model, val_top1
 
+
 def sanity_check_distributed_models(model, ddp_model):
     """
     Check if the model and ddp_model have the same parameters
     """
-    for (n1,p1), (n2,p2 )in zip(model.named_parameters(), ddp_model.module.named_parameters()):
+    for (n1, p1), (n2, p2) in zip(model.named_parameters(), ddp_model.module.named_parameters()):
         assert n1 == n2, f"Model and DDP model have different parameters: {n1} "
-        assert torch.allclose(p1, p2), f"Model and DDP model have different parameters: {n1} "
+        assert torch.allclose(
+            p1, p2), f"Model and DDP model have different parameters: {n1} "
+
 
 def wrap_model(model, find_unused_parameters, args):
     if args.distributed:
         if isinstance(model, torch.nn.parallel.DistributedDataParallel):
-            model = model.module        
-        model = torch.nn.parallel.DistributedDataParallel(model.to(args.rank), device_ids=[args.rank], find_unused_parameters=find_unused_parameters)
+            model = model.module
+        model = torch.nn.parallel.DistributedDataParallel(model.to(
+            args.rank), device_ids=[args.rank], find_unused_parameters=find_unused_parameters)
     else:
         model = model.to(args.rank)
     return model
-    
