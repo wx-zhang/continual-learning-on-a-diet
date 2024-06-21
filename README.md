@@ -8,7 +8,7 @@ This is the official PyTorch implementation for our ICLR 2024 paper, and for cus
 <a target="_blank" href="https://arxiv.org/abs/2404.12766">
 <img style="height:22pt" src="https://img.shields.io/badge/-Paper-red?style=flat&logo=arxiv">
 </a><a target="_blank" href="https://github.com/wx-zhang/continual-learning-on-a-diet">
-<img style="height:22pt" src="https://img.shields.io/badge/-Code-black?style=flat&logo=github">
+<img style="height:22pt" src="https://img.shields.io/badge/-Code-black?style=flat&logo=github"></a>
 <br>
 
 <span style="color:#183385; font-size: 14pt; font-family: Roboto, Helvetica, Arial, Heveltica Neue, sans-serif">
