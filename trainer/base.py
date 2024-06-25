@@ -139,13 +139,17 @@ class BaseTrainer(object):
             logits = model(samples, loss_pattern='classification')
 
         if mask_logits:
-            mask = torch.zeros(logits.size(1), dtype=torch.bool).to(logits.device)
-            mask.scatter_(0, torch.tensor(unique_classes), True)
-            if len(targets.size()) == 1:
-                logtis.scatter_(1, mask, -float('inf'))
-                loss = criterion(logits, targets)
+            if self.args.cl_setting == 'class_incremental':
+                loss = criterion(logits[:, -self.args.new_classes:], targets[:, -self.args.new_classes:])
             else:
-                loss = criterion(logits, targets, mask)
+
+                mask = torch.zeros(logits.size(1), dtype=torch.bool).to(logits.device)
+                mask.scatter_(0, torch.tensor(unique_classes), True)
+                if len(targets.size()) == 1:
+                    logtis.scatter_(1, mask, -float('inf'))
+                    loss = criterion(logits, targets)
+                else:
+                    loss = criterion(logits, targets, mask)
         else:
             loss = criterion(logits, targets)
 

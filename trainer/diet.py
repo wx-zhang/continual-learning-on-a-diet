@@ -3,6 +3,8 @@ from trainer.pretrain import PretrainTrainer
 from data import get_buffer, get_loader, get_and_update_buffer
 from utils import wrap_model
 from trainer.utils import *
+
+
 class DietTrainer(PretrainTrainer):
     def train(self, task, model, dataset):
         total_classes = dataset.get_total_seen_classes(task)

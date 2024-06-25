@@ -95,7 +95,7 @@ class CLOC(object):
     def get_unlabeled_set(self, task):
         index_file = f"{self.path}/{task}_unlabeled.torchSave"
         return CLOCPerTask(self.train_data, self.train_label, is_train=True, transform=self.unlabeled_transform, index_file=index_file)
-    def get_eval_set(self, task):
+    def get_eval_set(self, task, per_task_eval):
         return CLOCPerTask(self.test_data, timefile=self.time[task], transform=self.val_transform)
 
     

@@ -51,9 +51,10 @@ Follow this [issue](https://github.com/rwightman/pytorch-image-models/issues/420
 
 
 ### Reproduce Results
-TODO: 
-- [ ] Hyper-parameters need to be updated
-- [ ] Multi-node training need to be tested
+
+#### Pre-trained Models
+Follow this [link](https://github.com/facebookresearch/mae/issues/8) to download teh pre-trained model.
+
 #### ImageNet10K Results
 To avoid repeatant long pre-processing time and for stable results and faster read, we suggest to pre-process the dataset once and save it as folders of symbolic links. Please follow the following steps to prepare the dataset:
 1. download the imagenet 21k v2 dataset from the official [ImageNet Website](https://www.image-net.org/download-images.php). We use the Winter 2021 release, i.e., Processed version of ImageNet21Kusing the script of "ImageNet-21K pretraining for the masses"

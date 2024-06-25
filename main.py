@@ -142,6 +142,7 @@ def main_worker(gpu, args):
 
         # adapt model for new classes
         new_classes = dataset.get_new_classes(task)
+        args.new_classes = new_classes
         if new_classes > 0:
             model = model.module.cpu() if isinstance(model, torch.nn.parallel.DistributedDataParallel) else model.cpu()
             model.adaptation(new_classes)
