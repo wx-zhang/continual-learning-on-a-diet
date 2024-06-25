@@ -1,15 +1,4 @@
-# Continual Learning on a Diet: Learning from Sparsely Labeled Streams Under Constrained Computation
-This is the official PyTorch implementation for our ICLR 2024 paper, and for customizing the multi-GPU continual learning.
-
-<div style="width:40% float:center diaplay:inline">
-     <img src=./doc/kaust.png width=25%/> &nbsp; &nbsp; <img src=./doc/oxford.png width=25%/>
-</div>
-
-<a target="_blank" href="https://arxiv.org/abs/2404.12766">
-<img style="height:22pt" src="https://img.shields.io/badge/-Paper-red?style=flat&logo=arxiv">
-</a><a target="_blank" href="https://github.com/wx-zhang/continual-learning-on-a-diet">
-<img style="height:22pt" src="https://img.shields.io/badge/-Code-black?style=flat&logo=github">
-<br>
+# Continual Learning on a Diet: Learning from Sparsely Labeled Streams Under Constrained Computation （ICLR'24）
 
 <span style="color:#183385; font-size: 14pt; font-family: Roboto, Helvetica, Arial, Heveltica Neue, sans-serif">
      <b>Authors:</b> <a class="name" target="_blank" href="https://wx-zhang.github.io/">Wenxuan Zhang</a>, 
@@ -21,6 +10,15 @@ This is the official PyTorch implementation for our ICLR 2024 paper, and for cus
      <a class="btna" target="_blank" href="https://cemse.kaust.edu.sa/vision-cair/vision-cair">KAUST Vision-CAIR</a>, 
           <a class="btna" target="_blank" href="https://torrvision.com/index.html">Oxford TVG</a> &nbsp (* Equal Advising)&nbsp; 
      </span>
+     <br>
+     
+<a target="_blank" href="https://arxiv.org/abs/2404.12766">
+<img style="height:22pt" src="https://img.shields.io/badge/-Paper-red?style=flat&logo=arxiv">
+</a><a target="_blank" href="https://github.com/wx-zhang/continual-learning-on-a-diet">
+<img style="height:22pt" src="https://img.shields.io/badge/-Code-black?style=flat&logo=github"></a>
+
+Use this repo to reproduce our results and customize your own multi-gpu continual learning algorithms. 
+
 
 
 

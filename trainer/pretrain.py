@@ -30,7 +30,8 @@ class PretrainTrainer(BaseTrainer):
         return dataloaders
 
     def compute_iter(self, **kwargs):
-        total = self.args.steps * 1024 // (self.args.batch_size * self.args.world_size)
+        total = self.args.steps * \
+            1024 // (self.args.batch_size * self.args.world_size)
         s1_iters = int(total * self.args.train_staeg1_steps_ratio)
         if kwargs['stage'] == 1:
             return s1_iters
@@ -43,7 +44,8 @@ class PretrainTrainer(BaseTrainer):
         print(f"Task {task}, loading labeled dataset...")
         cur_labeled_set = dataset.get_labeled_set(task)
         print(f"Task {task}, labeled set loaded, size {len(cur_labeled_set)}")
-        cur_labeled_loader = get_loader(cur_labeled_set, batch_sizes[0], self.args)
+        cur_labeled_loader = get_loader(
+            cur_labeled_set, batch_sizes[0], self.args)
         if cur_labeled_loader is not None:
             dataloaders['cur_labeled'] = cur_labeled_loader
 
@@ -72,10 +74,12 @@ class PretrainTrainer(BaseTrainer):
         stage1_iterations = self.compute_iter(stage=1)
 
         # train
-        self.train_iterations(model, optimizer, train_loader, task, stage1_iterations, blr)
+        self.train_iterations(model, optimizer, train_loader,
+                              task, stage1_iterations, blr)
 
         # log overall training time
-        total_time = all_reduce_mean(time.time() - start_time, self.args.rank, self.args.world_size)
+        total_time = all_reduce_mean(
+            time.time() - start_time, self.args.rank, self.args.world_size)
         if self.args.rank == 0 and self.args.wandb.enable:
             wandb_log(f'{task}/total_pretrain_time', total_time)
 
@@ -85,7 +89,8 @@ class PretrainTrainer(BaseTrainer):
         """
         samples, _ = data
         samples = samples.float().cuda(self.args.rank, non_blocking=True)
-        loss = self.args.unlabeled_coef * model(samples, loss_pattern="reconstruction")[0]
+        loss = self.args.unlabeled_coef * \
+            model(samples, loss_pattern="reconstruction")[0]
 
         return loss
 
@@ -103,9 +108,11 @@ class PretrainTrainer(BaseTrainer):
         stage2_iterations = self.compute_iter(stage=2)
 
         # train
-        self.train_iterations(model, optimizer, train_loader, task, stage2_iterations, blr)
+        self.train_iterations(model, optimizer, train_loader,
+                              task, stage2_iterations, blr)
 
         # log overall training time
-        total_time = all_reduce_mean(time.time() - start_time, self.args.rank, self.args.world_size)
+        total_time = all_reduce_mean(
+            time.time() - start_time, self.args.rank, self.args.world_size)
         if self.args.rank == 0 and self.args.wandb.enable:
             wandb_log(f'{task}/total_finetune_time', total_time)

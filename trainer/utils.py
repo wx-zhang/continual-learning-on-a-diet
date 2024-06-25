@@ -1,11 +1,9 @@
 
 import torch
 from torch._six import inf
-from torch.distributed import all_reduce, ReduceOp, get_world_size
 import torch.distributed as dist
 
 import wandb
-
 
 
 def compute_lr(args):
@@ -13,8 +11,7 @@ def compute_lr(args):
     Base learning rate is for batch size 256.
     Scaling the learning rate for other batch sizes.
     """
-    return args.base_lr * 1024 / 256 # we normalize the batch size of gradient step to 1024
-
+    return args.base_lr * 1024 / 256  # we normalize the batch size of gradient step to 1024
 
 
 def compute_accumulation_steps(args):
@@ -23,7 +20,6 @@ def compute_accumulation_steps(args):
     """
     assert args.batch_size * args.world_size <= 1024, "Batch size too large"
     return 1024 // (args.batch_size * args.world_size)
-
 
 
 def get_grad_norm_(parameters, norm_type: float = 2.0) -> torch.Tensor:
@@ -35,12 +31,12 @@ def get_grad_norm_(parameters, norm_type: float = 2.0) -> torch.Tensor:
         return torch.tensor(0.)
     device = parameters[0].grad.device
     if norm_type == inf:
-        total_norm = max(p.grad.detach().abs().max().to(device) for p in parameters)
+        total_norm = max(p.grad.detach().abs().max().to(device)
+                         for p in parameters)
     else:
         total_norm = torch.norm(torch.stack([torch.norm(p.grad.detach(), norm_type).to(device) for p in parameters]),
                                 norm_type)
     return total_norm
-
 
 
 class NativeScalerWithGradNormCount:
@@ -54,7 +50,8 @@ class NativeScalerWithGradNormCount:
         if update_grad:
             if clip_grad is not None:
                 assert parameters is not None
-                self._scaler.unscale_(optimizer)  # unscale the gradients of optimizer's assigned params in-place
+                # unscale the gradients of optimizer's assigned params in-place
+                self._scaler.unscale_(optimizer)
                 norm = torch.nn.utils.clip_grad_norm_(parameters, clip_grad)
             else:
                 self._scaler.unscale_(optimizer)
@@ -72,7 +69,7 @@ class NativeScalerWithGradNormCount:
         self._scaler.load_state_dict(state_dict)
 
 
-def all_reduce_mean(x,gpu,world_size):
+def all_reduce_mean(x, gpu, world_size):
     """
     All reduce mean
     """
@@ -83,7 +80,6 @@ def all_reduce_mean(x,gpu,world_size):
         dist.all_reduce(x_reduce)
         x_reduce /= world_size
         return x_reduce.item()
-
 
 
 def wandb_log(name, val, step=None):

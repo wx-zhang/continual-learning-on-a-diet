@@ -1,12 +1,8 @@
-# main file to initialize the ddp model
-
 import os
-import sys
 import builtins
 import hydra
 import yaml
 import datetime
-import importlib
 from omegaconf import OmegaConf
 from argparse import Namespace
 
@@ -23,7 +19,8 @@ from utils import *
 from metric import ContinaulMetric
 
 # fix random seed
-os.environ['TORCH_DISTRIBUTED_DEBUG'] ='DETAIL'
+os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'DETAIL'
+
 
 def seed_everything(seed):
 
@@ -48,7 +45,8 @@ def main(args):
     if not os.path.exists(args.resume):
         args.resume = None
     if args.resume and not args.evaluate_only:
-        args = yaml.load(open(f"{args.resume}/config.yaml", 'r'), Loader=yaml.FullLoader)
+        args = yaml.load(
+            open(f"{args.resume}/config.yaml", 'r'), Loader=yaml.FullLoader)
         args = Namespace(**args)
         # check the resume task
         args.starting_task = find_available_ckpt(args.resume)
@@ -64,11 +62,10 @@ def main(args):
             OmegaConf.save(args, f)
 
     # set the random seed
-    if args.dist_url.startswith("tcp://"):  # if dist url is tcp, change the port to a random one before seed everything
+    # if dist url is tcp, change the port to a random one before seed everything
+    if args.dist_url.startswith("tcp://"):
         args.dist_url = args.dist_url[:-5] + str(random.randint(10000, 30000))
     seed_everything(args.seed)
-
-    
 
     # initialize the multiprocessing distributed training
     args.world_size = args.n_gpu_per_node * args.nodes
@@ -113,7 +110,8 @@ def main_worker(gpu, args):
                    config=OmegaConf.to_container(args), dir=args.output_dir)
 
     # initialize the metrics
-    val_top1 = ContinaulMetric(args, per_task_evaluation=(not args.light_evaluate))
+    val_top1 = ContinaulMetric(
+        args, per_task_evaluation=(not args.light_evaluate))
 
     # initialize the dataset
     dataset = getattr(dataset_hub, args.dataset)(args)
@@ -126,10 +124,10 @@ def main_worker(gpu, args):
     print(f"Check DDP model initializing...")
     model = wrap_model(model, args.model.find_unused_parameters, args)
 
-
     # resume from checkpoint
     if args.starting_task > 0:
-        model, val_top1 = resume_from_checkpoint(args.resume, args.starting_task, model)
+        model, val_top1 = resume_from_checkpoint(
+            args.resume, args.starting_task, model)
 
     # ————————Start training——————————————————
     for task in range(args.starting_task, args.split):
@@ -144,7 +142,8 @@ def main_worker(gpu, args):
         new_classes = dataset.get_new_classes(task)
         args.new_classes = new_classes
         if new_classes > 0:
-            model = model.module.cpu() if isinstance(model, torch.nn.parallel.DistributedDataParallel) else model.cpu()
+            model = model.module.cpu() if isinstance(
+                model, torch.nn.parallel.DistributedDataParallel) else model.cpu()
             model.adaptation(new_classes)
             print("Current classification head: ", model.projection_head)
             print(f"Check DDP model re-initializing due to head adaptation...")
@@ -171,7 +170,7 @@ def main_worker(gpu, args):
         # save the checkpoint
         if args.rank == 0:
             save_checkpoint(args, model, val_top1, task)
-        
+
         if args.debug and task > 2:
             break
 

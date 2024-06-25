@@ -46,11 +46,13 @@ class BaseTrainer(object):
     def initialize_model(self):
 
         model = getattr(model_hub, self.args.model.name)()
-        print (model)
+        print(model)
         if self.args.model.pre_trained is not None:
-            model.load_state_dict(torch.load(self.args.model.pre_trained, map_location='cpu')['model'], strict=False)
-            print(f"Loaded the pre-trained model from {self.args.model.pre_trained}")
-        
+            model.load_state_dict(torch.load(
+                self.args.model.pre_trained, map_location='cpu')['model'], strict=False)
+            print(
+                f"Loaded the pre-trained model from {self.args.model.pre_trained}")
+
         return model
 
     def mixup(self, total_classes):
@@ -88,14 +90,17 @@ class BaseTrainer(object):
         return the batch size for the current task, buffer
         """
 
-        assert (self.args.sampling in ['batchmix', 'uniform']) or self.args.replay_buffer_size == 0
+        assert (self.args.sampling in [
+                'batchmix', 'uniform']) or self.args.replay_buffer_size == 0
         if self.args.replay_buffer_size == 0 or task == 0:
             batch_sizes = [self.args.batch_size, 0]
         elif self.args.sampling == 'uniform':
             batch_sizes = [0, self.args.batch_size]
         else:
-            batch_sizes = [self.args.batch_size // 2, self.args.batch_size // 2]
-        print(f"Task {task}, labeled batch size {batch_sizes[0]}, buffer batch size {batch_sizes[1]}")
+            batch_sizes = [self.args.batch_size //
+                           2, self.args.batch_size // 2]
+        print(
+            f"Task {task}, labeled batch size {batch_sizes[0]}, buffer batch size {batch_sizes[1]}")
         return batch_sizes
 
     def get_dataloaders(self, task, dataset):
@@ -104,7 +109,8 @@ class BaseTrainer(object):
         print(f"Task {task}, loading labeled dataset...")
         cur_labeled_set = dataset.get_labeled_set(task)
         print(f"Task {task}, labeled set loaded, size {len(cur_labeled_set)}")
-        cur_labeled_loader = get_loader(cur_labeled_set, batch_sizes[0], self.args)
+        cur_labeled_loader = get_loader(
+            cur_labeled_set, batch_sizes[0], self.args)
         if cur_labeled_loader is not None:
             dataloaders['cur_labeled'] = cur_labeled_loader
 
@@ -124,7 +130,8 @@ class BaseTrainer(object):
         samples, targets = data
 
         unique_classes = targets.unique().cuda(self.args.rank, non_blocking=True)
-        samples, targets = samples.float().cuda(self.args.rank, non_blocking=True), targets.cuda(self.args.rank, non_blocking=True)
+        samples, targets = samples.float().cuda(
+            self.args.rank, non_blocking=True), targets.cuda(self.args.rank, non_blocking=True)
         if self.mixup_fcn is not None:
             if len(samples) % 2 != 0:
                 samples = samples[:-1]
@@ -160,7 +167,7 @@ class BaseTrainer(object):
 
     def compute_buffer_loss(self, model, data):
         return self.supervised_entropy_loss(model, data)
-    
+
     def compute_iter(self, **kwargs):
         """
         Compute the number of iterations 
@@ -183,14 +190,16 @@ class BaseTrainer(object):
         total_iter = self.compute_iter()
 
         start_time = time.time()
-        
+
         # +++++++++++++++ Start training ++++++++++ß+++++
         print(f"Start training task {task}")
-        self.train_iterations(model, optimizer, dataloaders, task, total_iter,  blr)
+        self.train_iterations(
+            model, optimizer, dataloaders, task, total_iter,  blr)
         # +++++++++++++++ End training +++++++++++++++
 
         # log overall training time
-        total_time = all_reduce_mean(time.time() - start_time, self.args.rank, self.args.world_size)
+        total_time = all_reduce_mean(
+            time.time() - start_time, self.args.rank, self.args.world_size)
         if self.args.rank == 0 and self.args.wandb.enable:
             wandb_log(f'{task}/total_train_time', total_time)
 
@@ -206,20 +215,20 @@ class BaseTrainer(object):
         model.train(True)
         optimizer.zero_grad()
 
-        
         accumulation = compute_accumulation_steps(self.args)
 
         iterators = {k: None for k, v in dataloaders.items()}
 
-        
         for iteration in range(total_iter):
             step = iteration//accumulation
             end = time.time()
             # check if we need gradient step at the current step
-            do_step = (iteration+1) % accumulation == 0 or iteration+1 == total_iter
+            do_step = (iteration+1) % accumulation == 0 or iteration + \
+                1 == total_iter
 
             if (iteration) % accumulation == 0:
-                lr = adjust_learning_rate(optimizer, iteration, total_iter, blr, self.args.min_lr, self.args.warmup)
+                lr = adjust_learning_rate(
+                    optimizer, iteration, total_iter, blr, self.args.min_lr, self.args.warmup)
 
             # iterate the dataloaders if we need
             for k, v in dataloaders.items():
@@ -231,7 +240,8 @@ class BaseTrainer(object):
 
             # get the data
             datas = {k: next(v) for k, v in iterators.items()}
-            cur_data_time = all_reduce_mean(time.time() - end, self.args.rank, self.args.world_size)
+            cur_data_time = all_reduce_mean(
+                time.time() - end, self.args.rank, self.args.world_size)
             data_time.update(cur_data_time)
 
             # compute loss
@@ -242,26 +252,30 @@ class BaseTrainer(object):
 
             torch.cuda.empty_cache()
 
-            loss = sum(all_loss.values()) 
+            loss = sum(all_loss.values())
 
             if not math.isfinite(loss):
                 print(f"Loss is {loss}, stopping training")
                 break
 
             # backprop
-            loss_scaler(loss, optimizer, parameters=model.parameters(), update_grad=do_step)
+            loss_scaler(loss, optimizer,
+                        parameters=model.parameters(), update_grad=do_step)
 
             if do_step:
                 optimizer.zero_grad()
 
             # measure elapsed time
-            cur_batch_time = all_reduce_mean(time.time() - end, self.args.rank, self.args.world_size)
+            cur_batch_time = all_reduce_mean(
+                time.time() - end, self.args.rank, self.args.world_size)
             batch_time.update(cur_batch_time)
 
             # logging
             for k in all_loss.keys():
-                all_loss[k] = all_reduce_mean(all_loss[k], self.args.rank, self.args.world_size)
-            total_loss = all_reduce_mean(loss, self.args.rank, self.args.world_size)
+                all_loss[k] = all_reduce_mean(
+                    all_loss[k], self.args.rank, self.args.world_size)
+            total_loss = all_reduce_mean(
+                loss, self.args.rank, self.args.world_size)
             if self.args.rank == 0 and self.args.wandb.enable and do_step:
                 wandb_log(f'{task}/lr', lr, step)
                 wandb_log(f'{task}/total_loss', total_loss, step)
@@ -293,29 +307,37 @@ class BaseTrainer(object):
                 loss = AverageMeter()
                 top1 = AverageMeter()
 
-                eval_set = dataset.get_eval_set(eval_task, per_task_eval=metric.per_task_evaluation)
-                eval_loader = get_loader(eval_set, self.args.batch_size, self.args, is_train=False)
+                eval_set = dataset.get_eval_set(
+                    eval_task, per_task_eval=metric.per_task_evaluation)
+                eval_loader = get_loader(
+                    eval_set, self.args.batch_size, self.args, is_train=False)
 
                 for i, (samples, target) in enumerate(eval_loader):
                     end = time.time()
-                    samples, target = samples.float().cuda(self.args.rank, non_blocking=True), target.cuda(self.args.rank, non_blocking=True)
+                    samples, target = samples.float().cuda(
+                        self.args.rank, non_blocking=True), target.cuda(self.args.rank, non_blocking=True)
                     logits = model(samples, loss_pattern='classification')
 
                     loss_val = criterion(logits, target)
                     prec1 = accuracy(logits, target, topk=(1,))[0]
-                    prec1 = all_reduce_mean(prec1, self.args.rank, self.args.world_size)
+                    prec1 = all_reduce_mean(
+                        prec1, self.args.rank, self.args.world_size)
 
-                    loss.update(all_reduce_mean(loss_val, self.args.rank, self.args.world_size), samples.size(0))
+                    loss.update(all_reduce_mean(
+                        loss_val, self.args.rank, self.args.world_size), samples.size(0))
                     top1.update(prec1, samples.size(0))
                     metric.update(eval_task, task, prec1, samples.size(0))
-                    batch_time.update(all_reduce_mean(time.time() - end, self.args.rank, self.args.world_size))
+                    batch_time.update(all_reduce_mean(
+                        time.time() - end, self.args.rank, self.args.world_size))
         metric.summarize(task)
 
         print(f"Task {task}, task average accuracy {metric.task_average}")
-        print(f"Task {task}, task learning average accuracy {metric.task_learning_average}")
+        print(
+            f"Task {task}, task learning average accuracy {metric.task_learning_average}")
         print(f"Task {task}, backward transfer {metric.backward_transfer}")
 
         if self.args.rank == 0 and self.args.wandb.enable:
             wandb.log({f"task average accuracy": metric.task_average})
-            wandb.log({f"task learning average accuracy": metric.task_learning_average})
+            wandb.log(
+                {f"task learning average accuracy": metric.task_learning_average})
             wandb.log({f"backward transfer": metric.backward_transfer})

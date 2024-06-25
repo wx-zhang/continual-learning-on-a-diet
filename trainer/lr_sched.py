@@ -6,9 +6,9 @@
 
 import math
 
+
 def adjust_learning_rate(optimizer, cur_iter, total_iter, blr, min_lr, warmup_iters):
     """Decay the learning rate with half-cycle cosine after warmup"""
-
 
     if blr < min_lr:
         min_lr = blr / 2

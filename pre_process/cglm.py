@@ -4,14 +4,18 @@ import csv
 import random
 
 parser = argparse.ArgumentParser(description='Get CGLM benchmark')
-parser.add_argument('--root', default='data_folder/glm', metavar='DIR', help='path to dataset')
-parser.add_argument('--benchmark', default='data_folder/cglm', metavar='DIR', help='Path to save benchmark')
+parser.add_argument('--root', default='data_folder/glm',
+                    metavar='DIR', help='path to dataset')
+parser.add_argument('--benchmark', default='data_folder/cglm',
+                    metavar='DIR', help='Path to save benchmark')
 parser.add_argument('--split', default=20, type=int, help='Number of splits')
-parser.add_argument('--label_rate', default=0.05, type=float, help='Label rate')
+parser.add_argument('--label_rate', default=0.05,
+                    type=float, help='Label rate')
 args = parser.parse_args()
 
 
-outpath = os.path.join(args.benchmark, f"{args.split}split_{args.label_rate}label")
+outpath = os.path.join(
+    args.benchmark, f"{args.split}split_{args.label_rate}label")
 os.makedirs(outpath, exist_ok=True)
 
 with open(os.path.join(args.root, 'train.txt'), 'r') as f:
@@ -46,7 +50,8 @@ with open(f'{outpath}/test.csv', 'w', newline='') as f:
 
 # split train set into 20 splits
 task_length = len(traindata) // args.split
-taski = [traindata[task_length * i:task_length * (i + 1)] for i in range(args.split)]
+taski = [traindata[task_length * i:task_length *
+                   (i + 1)] for i in range(args.split)]
 # each split ending time
 with open(f'{outpath}/{args.split}time.txt', 'w') as t:
     for i in range(args.split):
@@ -67,7 +72,8 @@ for taskid, task in enumerate(taski):
         for cls in dict.keys():
             cur_total_length = len(dict[cls])
             cur_labeled_length = round(cur_total_length * args.label_rate)
-            labeled_index = random.sample(range(cur_total_length), cur_labeled_length)
+            labeled_index = random.sample(
+                range(cur_total_length), cur_labeled_length)
             for i in range(cur_total_length):
                 path, time, id = dict[cls][i]
                 if i in labeled_index:
