@@ -71,7 +71,7 @@ class PretrainTrainer(BaseTrainer):
         train_loader = self.get_stage1_loader(task, dataset)
 
         # compute iterations
-        stage1_iterations = self.compute_iter(stage=1)
+        stage1_iterations = self.compute_iter(stage=1,task=task)
 
         # train
         self.train_iterations(model, optimizer, train_loader,

@@ -88,7 +88,7 @@ class ContinaulMetric(object):
         else:
             task_accuracy = [np.mean(self.task_matrix[t][:t+1])
                              for t in range(self.task_matrix.shape[0])]
-            self.task_average = np.mean(task_accuracy[:task+1])
+            self.task_average = task_accuracy[task]
             self.task_learning_average = np.diag(
                 self.task_matrix)[:task+1].mean()
             if task > 0:

@@ -25,6 +25,7 @@ wandb:
   enable: True
   project: dietcl
 base_dir: ./output
+save_ckpt: False
 print_freq: 50
 val_print_freq: 50
 debug: False

@@ -13,7 +13,7 @@ def get_run_name(args):
 
 
 def save_checkpoint(args, model, val_top1, task):
-    if args.rank == 0:
+    if args.rank == 0 and args.save_ckpt:
         torch.save(
             {
                 'model': model.state_dict(),

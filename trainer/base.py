@@ -296,7 +296,7 @@ class BaseTrainer(object):
 
         print(f"Start evaluating task {task}")
 
-        total_eval_task = 1 if metric.per_task_evaluation else task+1
+        total_eval_task = 1 if not metric.per_task_evaluation else task+1
         criterion = CrossEntropyLoss()
 
         batch_time = AverageMeter()
@@ -307,8 +307,13 @@ class BaseTrainer(object):
                 loss = AverageMeter()
                 top1 = AverageMeter()
 
-                eval_set = dataset.get_eval_set(
-                    eval_task, per_task_eval=metric.per_task_evaluation)
+                if not metric.per_task_evaluation:
+                    eval_set = dataset.get_eval_set(
+                        task, per_task_eval=metric.per_task_evaluation)
+                else:
+
+                    eval_set = dataset.get_eval_set(
+                        eval_task, per_task_eval=metric.per_task_evaluation)
                 eval_loader = get_loader(
                     eval_set, self.args.batch_size, self.args, is_train=False)
 

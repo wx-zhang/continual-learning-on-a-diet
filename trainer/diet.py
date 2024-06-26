@@ -6,6 +6,17 @@ from trainer.utils import *
 
 
 class DietTrainer(PretrainTrainer):
+
+    def compute_iter(self, **kwargs):
+        total = self.args.steps * \
+            1024 // (self.args.batch_size * self.args.world_size)
+        s1_iters = int(total * self.args.train_staeg1_steps_ratio)
+        if kwargs['task'] == 0:
+            s1_iters = total
+        if kwargs['stage'] == 1:
+            return s1_iters
+        else:
+            return total - s1_iters
     def train(self, task, model, dataset):
         total_classes = dataset.get_total_seen_classes(task)
         self.mixup(total_classes)
@@ -21,7 +32,7 @@ class DietTrainer(PretrainTrainer):
         """
         assert (self.args.sampling in [
                 'batchmix', 'uniform']) or self.args.replay_buffer_size == 0
-        if self.args.replay_buffer_size == 0:
+        if self.args.replay_buffer_size == 0 or task == 0:
             unlabeled_batch_size = int(
                 self.args.batch_size * self.args.unlabeled_data_ratio)
             labeled_batch_size = self.args.batch_size - unlabeled_batch_size
@@ -91,7 +102,7 @@ class DietTrainer(PretrainTrainer):
         train_loader = self.get_stage2_loader(task, dataset)
 
         # compute iterations
-        stage2_iterations = self.compute_iter(stage=2)
+        stage2_iterations = self.compute_iter(stage=2,task=task)
         if stage2_iterations == 0:
             return
 
